@@ -20,10 +20,10 @@
     <modules>
         <!-- 平台基础框架 -->
         <module>xiaoha-framework</module>
+        <!-- Gateway 网关服务 -->
+        <module>xiaohashu-gateway</module>
         <!-- 认证服务 -->
         <module>xiaohashu-auth</module>
-        <!-- 网关服务 -->
-        <module>xiaohashu-gateway</module>
     </modules>
 
     <properties>
@@ -55,11 +55,18 @@
         <commons-lang3.version>3.12.0</commons-lang3.version>
         <dypnsapi.version>2.0.0</dypnsapi.version>
         <nacos-config.version>0.3.0-RC</nacos-config.version>
+        <transmittable-thread-local.version>2.14.2</transmittable-thread-local.version>
     </properties>
 
     <!-- 统一依赖管理 -->
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.alibaba</groupId>
+                <artifactId>transmittable-thread-local</artifactId>
+                <version>${transmittable-thread-local.version}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.quanxiaoha</groupId>
                 <artifactId>xiaoha-common</artifactId>
@@ -70,6 +77,13 @@
             <dependency>
                 <groupId>com.quanxiaoha</groupId>
                 <artifactId>xiaoha-spring-boot-starter-biz-operationlog</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
+            <!-- Jackson 组件 -->
+            <dependency>
+                <groupId>com.quanxiaoha</groupId>
+                <artifactId>xiaoha-spring-boot-starter-jackson</artifactId>
                 <version>${revision}</version>
             </dependency>
 
@@ -148,6 +162,12 @@
                 <version>${sa-token.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>cn.dev33</groupId>
+                <artifactId>sa-token-reactor-spring-boot3-starter</artifactId>
+                <version>${sa-token.version}</version>
+            </dependency>
+
             <!-- Sa-Token 整合 Redis （使用 jackson 序列化方式） -->
             <dependency>
                 <groupId>cn.dev33</groupId>
@@ -174,7 +194,7 @@
                 <version>${commons-lang3.version}</version>
             </dependency>
 
-            <!-- 阿里云短信发送 -->
+            <!-- 阿里云号码认证服务 -->
             <dependency>
                 <groupId>com.aliyun</groupId>
                 <artifactId>dypnsapi20170525</artifactId>
@@ -186,12 +206,6 @@
                 <groupId>com.alibaba.boot</groupId>
                 <artifactId>nacos-config-spring-boot-starter</artifactId>
                 <version>${nacos-config.version}</version>
-            </dependency>
-
-            <dependency>
-                <groupId>cn.dev33</groupId>
-                <artifactId>sa-token-reactor-spring-boot3-starter</artifactId>
-                <version>${sa-token.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

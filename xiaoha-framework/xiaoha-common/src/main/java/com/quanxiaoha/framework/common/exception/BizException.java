@@ -3,6 +3,12 @@ package com.quanxiaoha.framework.common.exception;
 import lombok.Getter;
 import lombok.Setter;
 
+/**
+ * @author: 犬小哈
+ * @url: www.quanxiaoha.com
+ * @date: 2023-08-15 9:52
+ * @description: 业务异常
+ **/
 @Getter
 @Setter
 public class BizException extends RuntimeException {
@@ -16,4 +22,3 @@ public class BizException extends RuntimeException {
         this.errorMessage = baseExceptionInterface.getErrorMessage();
     }
 }
-

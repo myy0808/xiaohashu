@@ -3,37 +3,38 @@ package com.quanxiaoha.xiaohashu.auth.service.impl;
 import cn.dev33.satoken.stp.SaTokenInfo;
 import cn.dev33.satoken.stp.StpUtil;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.Lists;
 import com.quanxiaoha.framework.common.enums.DeletedEnum;
 import com.quanxiaoha.framework.common.enums.StatusEnum;
-import com.quanxiaoha.framework.common.exception.BaseExceptionInterface;
 import com.quanxiaoha.framework.common.exception.BizException;
 import com.quanxiaoha.framework.common.response.Response;
 import com.quanxiaoha.framework.common.util.JsonUtils;
 import com.quanxiaoha.xiaohashu.auth.constant.RedisKeyConstants;
 import com.quanxiaoha.xiaohashu.auth.constant.RoleConstants;
+import com.quanxiaoha.xiaohashu.auth.domain.dataobject.RoleDO;
 import com.quanxiaoha.xiaohashu.auth.domain.dataobject.UserDO;
 import com.quanxiaoha.xiaohashu.auth.domain.dataobject.UserRoleDO;
+import com.quanxiaoha.xiaohashu.auth.domain.mapper.RoleDOMapper;
 import com.quanxiaoha.xiaohashu.auth.domain.mapper.UserDOMapper;
 import com.quanxiaoha.xiaohashu.auth.domain.mapper.UserRoleDOMapper;
 import com.quanxiaoha.xiaohashu.auth.enums.LoginTypeEnum;
 import com.quanxiaoha.xiaohashu.auth.enums.ResponseCodeEnum;
+import com.quanxiaoha.xiaohashu.auth.filter.LoginUserContextHolder;
+import com.quanxiaoha.xiaohashu.auth.model.vo.user.UpdatePasswordReqVO;
 import com.quanxiaoha.xiaohashu.auth.model.vo.user.UserLoginReqVO;
 import com.quanxiaoha.xiaohashu.auth.service.UserService;
-import jakarta.annotation.Resource;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-
-import static com.quanxiaoha.xiaohashu.auth.enums.LoginTypeEnum.*;
 
 /**
  * @author: 犬小哈
@@ -50,6 +51,8 @@ public class UserServiceImpl implements UserService {
     private final RedisTemplate<String, Object> redisTemplate;
     private final UserRoleDOMapper userRoleDOMapper;
     private final TransactionTemplate transactionTemplate;
+    private final RoleDOMapper roleDOMapper;
+    private final PasswordEncoder passwordEncoder;
 
 
     /**
@@ -93,9 +96,30 @@ public class UserServiceImpl implements UserService {
                     userId = userDO.getId();
                 }
                 break;
-            case PASSWORD:
-                // 密码登录
-                //todo
+            case PASSWORD: // 密码登录
+                String password = userLoginReqVO.getPassword();
+                // 根据手机号查询
+                UserDO userDO1 = userDOMapper.selectByPhone(phone);
+
+                // 判断该手机号是否注册
+                if (Objects.isNull(userDO1)) {
+                    throw new BizException(ResponseCodeEnum.USER_NOT_FOUND);
+                }
+
+                // 拿到密文密码
+                String encodePassword = userDO1.getPassword();
+
+                // 匹配密码是否一致
+                boolean isPasswordCorrect = passwordEncoder.matches(password, encodePassword);
+
+                // 如果不正确，则抛出业务异常，提示用户名或者密码不正确
+                if (!isPasswordCorrect) {
+                    throw new BizException(ResponseCodeEnum.PHONE_OR_PASSWORD_ERROR);
+                }
+
+                userId = userDO1.getId();
+                break;
+            default:
                 break;
         }
 
@@ -106,6 +130,50 @@ public class UserServiceImpl implements UserService {
         //返回token令牌
         return Response.success(tokenInfo.getTokenValue());
 
+    }
+
+    /**
+     * 退出登录
+     *
+     * @return
+     */
+    @Override
+    public Response<?> logout() {
+        Long userId = LoginUserContextHolder.getUserId();
+
+        log.info("==> 用户退出登录, userId: {}", userId);
+
+        // 退出登录 (指定用户 ID)
+        StpUtil.logout(userId);
+
+        return Response.success();
+    }
+
+    /**
+     * 修改密码
+     *
+     * @param updatePasswordReqVO
+     * @return
+     */
+    @Override
+    public Response<?> updatePassword(UpdatePasswordReqVO updatePasswordReqVO) {
+        // 新密码
+        String newPassword = updatePasswordReqVO.getNewPassword();
+        // 密码加密
+        String encodePassword = passwordEncoder.encode(newPassword);
+
+        // 获取当前请求对应的用户 ID
+        Long userId = LoginUserContextHolder.getUserId();
+
+        UserDO userDO = UserDO.builder()
+                .id(userId)
+                .password(encodePassword)
+                .updateTime(LocalDateTime.now())
+                .build();
+        // 更新密码
+        userDOMapper.updateByPrimaryKeySelective(userDO);
+
+        return Response.success();
     }
 
     /**
@@ -146,10 +214,13 @@ public class UserServiceImpl implements UserService {
                         .build();
                 userRoleDOMapper.insert(userRoleDO);
 
-                // 将该用户的角色 ID 存入 Redis 中
-                List<Long> roles = Lists.newArrayList();
-                roles.add(RoleConstants.COMMON_USER_ROLE_ID);
-                String userRolesKey = RedisKeyConstants.buildUserRoleKey(phone);
+                RoleDO roleDO = roleDOMapper.selectByPrimaryKey(RoleConstants.COMMON_USER_ROLE_ID);
+
+                // 将该用户的角色 ID 存入 Redis 中，指定初始容量为 1，这样可以减少在扩容时的性能开销
+                List<String> roles = new ArrayList<>(1);
+                roles.add(roleDO.getRoleKey());
+
+                String userRolesKey = RedisKeyConstants.buildUserRoleKey(userId);
                 redisTemplate.opsForValue().set(userRolesKey, JsonUtils.toJsonString(roles));
 
                 return userId;

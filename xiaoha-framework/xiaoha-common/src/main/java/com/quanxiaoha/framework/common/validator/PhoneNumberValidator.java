@@ -13,7 +13,6 @@ public class PhoneNumberValidator implements ConstraintValidator<PhoneNumber, St
 
     @Override
     public void initialize(PhoneNumber constraintAnnotation) {
-        // 这里进行一些初始化操作
     }
 
     @Override
@@ -22,4 +21,3 @@ public class PhoneNumberValidator implements ConstraintValidator<PhoneNumber, St
         return phoneNumber != null && phoneNumber.matches("\\d{11}");
     }
 }
-

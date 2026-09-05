@@ -9,17 +9,21 @@
   <name>${project.artifactId}</name>
   <description>小哈书（仿小红书），基于 Spring Cloud Alibaba 微服务架构</description>
   <modules>
-    <module>xiaohashu-auth</module>
     <module>xiaoha-framework</module>
+    <module>xiaohashu-gateway</module>
+    <module>xiaohashu-auth</module>
   </modules>
   <properties>
     <java.version>17</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven-compiler-plugin.version>3.8.1</maven-compiler-plugin.version>
+    <hutool.version>5.8.26</hutool.version>
     <mysql-connector-java.version>8.0.29</mysql-connector-java.version>
     <jackson.version>2.16.1</jackson.version>
-    <spring-boot.version>3.0.2</spring-boot.version>
+    <sa-token.version>1.38.0</sa-token.version>
+    <guava.version>33.0.0-jre</guava.version>
     <flatten-maven-plugin.version>1.5.0</flatten-maven-plugin.version>
+    <spring-boot.version>3.0.2</spring-boot.version>
     <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
     <revision>0.0.1-SNAPSHOT</revision>
     <spring-cloud.version>2022.0.0</spring-cloud.version>
@@ -27,14 +31,27 @@
     <maven.compiler.target>${java.version}</maven.compiler.target>
     <mybatis-generator-maven-plugin.version>1.3.5</mybatis-generator-maven-plugin.version>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <druid.version>1.2.21</druid.version>
+    <commons-lang3.version>3.12.0</commons-lang3.version>
+    <druid.version>1.2.23</druid.version>
+    <nacos-config.version>0.3.0-RC</nacos-config.version>
+    <dypnsapi.version>2.0.0</dypnsapi.version>
   </properties>
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>org.projectlombok</groupId>
-        <artifactId>lombok</artifactId>
-        <version>${lombok.version}</version>
+        <groupId>com.quanxiaoha</groupId>
+        <artifactId>xiaoha-common</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>com.quanxiaoha</groupId>
+        <artifactId>xiaoha-spring-boot-starter-biz-operationlog</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
+      </dependency>
+      <dependency>
+        <groupId>com.quanxiaoha</groupId>
+        <artifactId>xiaoha-spring-boot-starter-jackson</artifactId>
+        <version>0.0.1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.springframework.boot</groupId>
@@ -58,9 +75,9 @@
         <scope>import</scope>
       </dependency>
       <dependency>
-        <groupId>com.quanxiaoha</groupId>
-        <artifactId>xiaoha-common</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok</artifactId>
+        <version>${lombok.version}</version>
       </dependency>
       <dependency>
         <groupId>com.fasterxml.jackson.core</groupId>
@@ -71,11 +88,6 @@
         <groupId>com.fasterxml.jackson.core</groupId>
         <artifactId>jackson-core</artifactId>
         <version>${jackson.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.quanxiaoha</groupId>
-        <artifactId>xiaoha-spring-boot-starter-biz-operationlog</artifactId>
-        <version>0.0.1-SNAPSHOT</version>
       </dependency>
       <dependency>
         <groupId>org.mybatis.spring.boot</groupId>
@@ -91,6 +103,46 @@
         <groupId>com.alibaba</groupId>
         <artifactId>druid-spring-boot-3-starter</artifactId>
         <version>${druid.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>cn.dev33</groupId>
+        <artifactId>sa-token-spring-boot3-starter</artifactId>
+        <version>${sa-token.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>cn.dev33</groupId>
+        <artifactId>sa-token-reactor-spring-boot3-starter</artifactId>
+        <version>${sa-token.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>cn.dev33</groupId>
+        <artifactId>sa-token-redis-jackson</artifactId>
+        <version>${sa-token.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.google.guava</groupId>
+        <artifactId>guava</artifactId>
+        <version>${guava.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>cn.hutool</groupId>
+        <artifactId>hutool-all</artifactId>
+        <version>${hutool.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-lang3</artifactId>
+        <version>${commons-lang3.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.aliyun</groupId>
+        <artifactId>dypnsapi20170525</artifactId>
+        <version>${dypnsapi.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>com.alibaba.boot</groupId>
+        <artifactId>nacos-config-spring-boot-starter</artifactId>
+        <version>${nacos-config.version}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

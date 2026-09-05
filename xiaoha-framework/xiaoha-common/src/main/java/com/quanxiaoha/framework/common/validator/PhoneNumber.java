@@ -22,4 +22,3 @@ public @interface PhoneNumber {
 
     Class<? extends Payload>[] payload() default {};
 }
-

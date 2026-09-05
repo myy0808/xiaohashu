@@ -21,6 +21,7 @@
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
         </dependency>
+
         <!-- Jackson -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -32,7 +33,7 @@
             <artifactId>jackson-core</artifactId>
         </dependency>
 
-        <!-- 解决 Jackson Java 8 新日期 API 的序列化问题 -->
+        <!-- 解决 LocalDateTime 的序列化问题 -->
         <dependency>
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
@@ -65,4 +66,3 @@
         </dependency>
     </dependencies>
 </project>
-
