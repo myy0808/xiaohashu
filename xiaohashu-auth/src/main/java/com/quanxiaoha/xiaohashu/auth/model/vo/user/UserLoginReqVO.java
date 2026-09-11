@@ -43,4 +43,3 @@ public class UserLoginReqVO {
     @NotNull(message = "登录类型不能为空")
     private Integer type;
 }
-

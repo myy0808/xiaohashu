@@ -9,7 +9,6 @@ import com.quanxiaoha.xiaohashu.auth.model.vo.verificationcode.SendVerificationC
 import com.quanxiaoha.xiaohashu.auth.service.VerificationCodeService;
 import com.quanxiaoha.xiaohashu.auth.sms.AliyunSmsHelper;
 import jakarta.annotation.Resource;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
@@ -17,33 +16,44 @@ import org.springframework.stereotype.Service;
 
 import java.util.concurrent.TimeUnit;
 
-
-@RequiredArgsConstructor
-@Slf4j
 @Service
+@Slf4j
 public class VerificationCodeServiceImpl implements VerificationCodeService {
 
-    private final RedisTemplate redisTemplate;
+    @Resource
+    private RedisTemplate<String, Object> redisTemplate;
     @Resource(name = "taskExecutor")
     private ThreadPoolTaskExecutor threadPoolTaskExecutor;
-    private final AliyunSmsHelper aliyunSmsHelper;
+    @Resource
+    private AliyunSmsHelper aliyunSmsHelper;
 
-
+    /**
+     * 发送短信验证码
+     *
+     * @param sendVerificationCodeReqVO
+     * @return
+     */
     @Override
     public Response<?> send(SendVerificationCodeReqVO sendVerificationCodeReqVO) {
-        //获取手机号
-        String phone = getPhone(sendVerificationCodeReqVO);
-        //构建redis的key
+        // 手机号
+        String phone = sendVerificationCodeReqVO.getPhone();
+
+        // 构建验证码 redis key
         String key = RedisKeyConstants.buildVerificationCodeKey(phone);
-        //判断key是否存在
-        Boolean exists = redisTemplate.hasKey(key);
-        //存在，则提示验证码请求太频繁
-        if (exists) {
+
+        // 判断是否已发送验证码
+        boolean isSent = redisTemplate.hasKey(key);
+        if (isSent) {
+            // 若之前发送的验证码未过期，则提示发送频繁
             throw new BizException(ResponseCodeEnum.VERIFICATION_CODE_SEND_FREQUENTLY);
         }
-        //不存在，则生成6位数字验证码
+
+        // 生成 6 位随机数字验证码
         String verificationCode = RandomUtil.randomNumbers(6);
-        //todo 调用第三方短信服务，发送手机验证码
+
+        log.info("==> 手机号: {}, 已生成验证码：【{}】", phone, verificationCode);
+
+        // 调用第三方短信发送服务
         threadPoolTaskExecutor.submit(() -> {
             String signName = "速通互联验证码"; // 签名，个人测试签名无法修改
             String templateCode = "100001"; // 短信模板编码
@@ -51,15 +61,10 @@ public class VerificationCodeServiceImpl implements VerificationCodeService {
             String templateParam = String.format("{\"code\":\"%s\",\"min\":\"3\"}", verificationCode);
             aliyunSmsHelper.sendMessage(signName, templateCode, phone, templateParam);
         });
-        //存储该手机号的验证码到redis，过期时间为3分钟
-        redisTemplate.opsForValue().set(key, verificationCode, 3, TimeUnit.MINUTES);
-        //结束，返回结果
-        return  Response.success();
-    }
 
-    private static String getPhone(SendVerificationCodeReqVO sendVerificationCodeReqVO) {
-        return sendVerificationCodeReqVO.getPhone();
+        // 存储验证码到 redis, 并设置过期时间为 3 分钟
+        redisTemplate.opsForValue().set(key, verificationCode, 3, TimeUnit.MINUTES);
+
+        return Response.success();
     }
 }
-
-
