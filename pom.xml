@@ -28,6 +28,7 @@
         <module>xiaohashu-oss</module>
         <!-- 用户服务 -->
         <module>xiaohashu-user</module>
+        <!-- KV存储服务 -->
         <module>xiaohashu-kv</module>
     </modules>
 
