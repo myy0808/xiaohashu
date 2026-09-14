@@ -30,6 +30,8 @@
         <module>xiaohashu-user</module>
         <!-- KV存储服务 -->
         <module>xiaohashu-kv</module>
+        <!-- 分布式ID生成服务 -->
+        <module>xiaohashu-distributed-id-generator</module>
     </modules>
 
     <properties>
@@ -73,6 +75,12 @@
     <!-- 统一依赖管理 -->
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.quanxiaoha</groupId>
+                <artifactId>xiaohashu-distributed-id-generator-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.quanxiaoha</groupId>
                 <artifactId>xiaohashu-kv-api</artifactId>
