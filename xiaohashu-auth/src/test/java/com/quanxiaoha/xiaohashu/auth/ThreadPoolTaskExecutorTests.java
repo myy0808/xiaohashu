@@ -27,4 +27,3 @@ public class ThreadPoolTaskExecutorTests {
         threadPoolTaskExecutor.submit(() -> log.info("异步线程中说: 犬小哈专栏"));
     }
 }
-

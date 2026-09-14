@@ -27,7 +27,7 @@ class DruidTests {
         // 公钥
         log.info("publicKey: {}", arr[1]);
 
-        // 通过私钥加密密码
+        // 使用私钥对明文密码进行加密
         String encodePassword = ConfigTools.encrypt(arr[0], password);
         log.info("password: {}", encodePassword);
     }

@@ -42,4 +42,3 @@ public class ThreadPoolConfig {
         return executor;
     }
 }
-

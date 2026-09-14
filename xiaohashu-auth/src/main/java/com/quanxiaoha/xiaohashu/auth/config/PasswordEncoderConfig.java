@@ -25,4 +25,3 @@ public class PasswordEncoderConfig {
         System.out.println(encoder.encode("qwe123"));
     }
 }
-

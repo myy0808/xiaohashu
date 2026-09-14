@@ -2,9 +2,13 @@ package com.quanxiaoha.xiaohashu.auth.service;
 
 import com.quanxiaoha.framework.common.response.Response;
 import com.quanxiaoha.xiaohashu.auth.model.vo.verificationcode.SendVerificationCodeReqVO;
-import org.springframework.stereotype.Service;
 
-
+/**
+ * @author: 犬小哈
+ * @date: 2024/4/7 15:41
+ * @version: v1.0.0
+ * @description: TODO
+ **/
 public interface VerificationCodeService {
 
     /**
@@ -15,4 +19,3 @@ public interface VerificationCodeService {
      */
     Response<?> send(SendVerificationCodeReqVO sendVerificationCodeReqVO);
 }
-
