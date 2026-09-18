@@ -18,6 +18,11 @@
     <dependencies>
         <dependency>
             <groupId>com.quanxiaoha</groupId>
+            <artifactId>xiaohashu-distributed-id-generator-api</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.quanxiaoha</groupId>
             <artifactId>xiaoha-common</artifactId>
         </dependency>
 
@@ -100,6 +105,13 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
         </dependency>
+
+        <!-- Caffeine 本地缓存 -->
+        <dependency>
+            <groupId>com.github.ben-manes.caffeine</groupId>
+            <artifactId>caffeine</artifactId>
+        </dependency>
+
     </dependencies>
 
     <build>

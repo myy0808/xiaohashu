@@ -30,6 +30,10 @@
         <module>xiaohashu-user</module>
         <!-- KV存储服务 -->
         <module>xiaohashu-kv</module>
+        <!-- 分布式ID生成服务 -->
+        <module>xiaohashu-distributed-id-generator</module>
+        <!-- 笔记服务 -->
+        <module>xiaohashu-note</module>
     </modules>
 
     <properties>
@@ -68,11 +72,24 @@
         <activation.version>1.1.1</activation.version>
         <jaxb-runtime.version>2.3.3</jaxb-runtime.version>
         <feign-form.version>3.8.0</feign-form.version>
+        <caffeine.version>3.1.8</caffeine.version>
     </properties>
 
     <!-- 统一依赖管理 -->
     <dependencyManagement>
         <dependencies>
+            <!-- Caffeine 本地缓存 -->
+            <dependency>
+                <groupId>com.github.ben-manes.caffeine</groupId>
+                <artifactId>caffeine</artifactId>
+                <version>${caffeine.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.quanxiaoha</groupId>
+                <artifactId>xiaohashu-distributed-id-generator-api</artifactId>
+                <version>${revision}</version>
+            </dependency>
+
             <dependency>
                 <groupId>com.quanxiaoha</groupId>
                 <artifactId>xiaohashu-kv-api</artifactId>
